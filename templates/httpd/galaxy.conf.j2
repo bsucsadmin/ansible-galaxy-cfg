@@ -1,0 +1,82 @@
+   
+   # Preserve Host, needed for uploads
+    ProxyPreserveHost on
+
+    # use a variable for convenience
+    Define galaxy_root {{ galaxy_server_dir }}
+
+    # don't decode encoded slashes in path info
+    AllowEncodedSlashes NoDecode
+
+    # enable compression on all relevant types
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml
+    AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE application/x-javascript application/javascript application/ecmascript
+    AddOutputFilterByType DEFLATE application/rss+xml
+    AddOutputFilterByType DEFLATE application/xml
+    AddOutputFilterByType DEFLATE application/json
+
+    # allow access to static content
+    <Directory "${galaxy_root}/static">
+        AllowOverride None
+        Require all granted
+    </Directory>
+
+    # Galaxy needs to know that this is https for generating URLs
+    RequestHeader set "X-Forwarded-Proto" expr=%{REQUEST_SCHEME}
+#    RequestHeader set "X-Forwarded-Proto" expr="%{REQUEST_SCHEME}"
+
+    # allow up to 3 minutes for Galaxy to respond to slow requests before timing out
+    ProxyTimeout 180
+
+    ProxyPreserveHost on
+
+    # proxy all requests not matching other locations to Gunicorn
+    ProxyPass /galaxy {{ galaxy_config.gravity.gunicorn.bind }}|http://localhost/galaxy 
+    # or Gunicorn on a TCP socket
+    # ProxyPass / http://localhost:4001/
+
+    # serve framework static content
+    RewriteEngine On
+    RewriteCond %{HTTPS} off
+    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI}
+    RewriteRule ^/galaxy/$ /galaxy [R,L]
+    RewriteRule ^/galaxy/static/(.*) ${galaxy_root}/static/$1 [L]
+    RewriteRule ^/galaxy/favicon.ico ${galaxy_root}/static/favicon.ico [L]
+    RewriteRule ^/galaxy/robots.txt ${galaxy_root}/static/robots.txt [L]
+    
+    <Location "/galaxy">
+	XSendFile on
+	XSendFilePath ${galaxy_root} 
+    </Location> 
+    # enable caching on static content
+    <Location "/galaxy/static">
+        ExpiresActive On
+        ExpiresDefault "access plus 24 hours"
+    </Location>
+    #enable resumable uploads with tusd
+    <Location "/galaxy/api/upload/resumable_upload/files">
+        RequestHeader set X-Forwarded-Proto "https"
+        ProxyPreserveHost on
+        RewriteCond %{HTTP:Connection} Upgrade [NC]
+        RewriteCond %{HTTP:Upgrade} websocket [NC]
+        ProxyPass http://127.0.0.1:{{ galaxy_tusd_port }}/files
+        ProxyPassReverse http://127.0.0.1:{{ galaxy_tusd_port }}/files
+    </Location>
+    <Location "/reports">
+        RequestHeader set X-Forwarded-Proto "https"
+        ProxyPreserveHost on
+        RewriteCond %{HTTP:Connection} Upgrade [NC]
+        RewriteCond %{HTTP:Upgrade} websocket [NC]
+        ProxyPass {{ galaxy_config.gravity.reports.bind }}|http://localhost/reports
+        ProxyPassReverse {{ galaxy_config.gravity.reports.bind }}|http://localhost/reports
+    </Location>
+    <Location /flower>
+        ProxyPass http://localhost:5555
+    </Location>
+    # serve visualization plugin static content
+    <Directory "${galaxy_root}/config/plugins/(.+)/(.+)/static">
+        AllowOverride None
+        Require all granted
+    </Directory>
+    RewriteRule ^/galaxy/plugins/(.+)/(.+)/static/(.*)$ ${galaxy_root}/config/plugins/$1/$2/static/$3 [L]

@@ -1,0 +1,16 @@
+[galaxyservers]
+csci-galaxtose.dhcp.bsu.edu ansible_connection=local ansible_user=csadmin
+[dbservers:children]
+galaxyservers
+
+[monitoring]
+csci-galaxtose.dhcp.bsu.edu ansible_connection=local ansible_user=csadmin
+
+[beacon]
+[beacon:children]
+beacon_import
+beacon_server
+[beacon_server]
+csci-galaxtose.dhcp.bsu.edu ansible_connection=local ansible_user=csadmin
+[beacon_import]
+csci-galaxtose.dhcp.bsu.edu ansible_connection=local ansible_user=csadmin

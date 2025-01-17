@@ -1,0 +1,12 @@
+---
+- name: Remove guest user
+  containers.podman.podman_container_exec:
+    name: "{{ rabbitmq_container.name }}"
+    command: rabbitmqctl delete_user 'guest'
+  ignore_errors: true
+
+- name: Enable plugins
+  containers.podman.podman_container_exec:
+    name: "{{ rabbitmq_container.name }}"
+    command: "rabbitmq-plugins enable {{ item }}"
+  loop: "{{ rabbitmq_plugins }}"

@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<auth>
+  <authenticator>
+    <type>ldap3</type>
+    <filter>'{email}'.endswith('@bsu.edu')</filter>
+    <options>
+      <allow-register>False</allow-register>
+      <auto-register>True</auto-register>
+      <allow-password-change>False</allow-password-change>
+      <server>ldap://ldap.bsu.edu</server>
+      <bind-user>{sAMAccountName}@bsu.edu</bind-user>
+      <bind-password>{password}</bind-password>
+      <search-filter>(&amp;(objectClass=user)(mail={email}))</search-filter>
+      <search-fields>sAMAccountName,mail</search-fields>
+      <search-base>cn=users,dc=bsu,dc=edu</search-base>
+      <auto-register-username>{sAMAccountName}</auto-register-username>
+      <auto-register-email>{mail}</auto-register-email>
+      <auto-register-roles>{gidNumber}</auto-register-roles>
+    </options>
+  </authenticator>
+</auth>
