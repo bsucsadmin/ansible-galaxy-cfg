@@ -14,7 +14,6 @@ miniconda_version: 24.11.1
 miniconda_channels: ['conda-forge', 'bioconda', 'defaults']
 galaxy_additional_venv_packages:
   - ldap3
-  - redis
 
 # Galaxy Job Configuration
 galaxy_job_config:
@@ -80,12 +79,16 @@ galaxy_config:
     #  - type: tool_shed_packages  
     container_resolvers_config_file: "{{ galaxy_config_dir }}/container_resolvers_conf.yml"
     # Data Library Directories
-    library_import_dir: /libraries/admin
-    user_library_import_dir: /libraries/user
+    library_import_dir: /share/data/libraries/admin
+    user_library_import_dir: /share/data/libraries/user
     # Celery
-    celery_conf:
-      result_backend: "redis://localhost:6379/0"
     enable_celery_tasks: true
+    celery_conf:
+      broker_url: null
+      result_backend: "db+"
+      task_routes:
+        galaxy.fetch_data: galaxy.external
+        galaxy.set_job_metadata: galaxy.external
     # Monitoring
     statsd_host: localhost
     statsd_influxdb: true
@@ -159,25 +162,6 @@ galaxy_extra_dirs:
 # TUS
 galaxy_tusd_port: 1080
 galaxy_tus_upload_store: /share/data/tus
-
-# Flower
-flower_python_version: python3
-flower_app_dir: "{{ galaxy_root }}"
-flower_python_path: "{{ galaxy_root }}/server/lib"
-flower_venv_dir: "{{ galaxy_venv_dir }}"
-flower_app_name: galaxy.celery
-flower_db_file: "{{ galaxy_root }}/var/flower.db"
-flower_persistent: true
-flower_broker_api: "https://flower:{{ vault_rabbitmq_password_flower }}@localhost:5671/api/"
-flower_broker_url: "amqp://flower:{{ vault_rabbitmq_password_flower }}@localhost:5671/galaxy_internal?ssl=true"
-flower_proxy_prefix: /flower
-
-flower_ui_users:
-  - name: admin
-    password: "{{ vault_flower_user_password}}"
-
-flower_environment_variables:
-  GALAXY_CONFIG_FILE: "{{ galaxy_config_file }}"
 
 # Telegraf
 telegraf_plugins_extra:
