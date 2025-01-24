@@ -42,7 +42,6 @@
     - galaxyproject.proftpd
     - galaxyproject.gxadmin
     - galaxyproject.cvmfs
-    - dj-wasabi.telegraf
   post_tasks:
     - name: Setup gxadmin cleanup task
       ansible.builtin.cron:

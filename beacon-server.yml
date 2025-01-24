@@ -1,9 +1,0 @@
----
-- name: Beacon Server
-  hosts: beacon_server
-  become: true
-  become_user: root
-  vars_files:
-    - group_vars/secret.yml
-  roles:
-    - paprikant.beacon
