@@ -6,6 +6,7 @@ galaxy_manage_paths: true # False by default as your administrator might e.g. ha
 galaxy_manage_cleanup: true
 galaxy_layout: root-dir
 galaxy_root: /opt/ohpc/pub/srv/galaxy
+galaxy_data_dir: /share/data/galaxy
 galaxy_user: {name: "{{ galaxy_user_name }}", shell: /bin/bash}
 galaxy_commit_id: v24.1.3 
 galaxy_force_checkout: true
@@ -59,8 +60,8 @@ galaxy_config:
     - haren.eshwaran@bsu.edu
     cleanup_job: onsuccess
     database_connection: "postgresql:///{{ galaxy_db_name }}?host=/var/run/postgresql"
-    file_path: /share/data/datasets
-    job_working_directory: /share/data/jobs
+    file_path: "{{ galaxy_data_dir }}/datasets"
+    job_working_directory: "{{ galaxy_data_dir }}/jobs"
     object_store_store_by: uuid
     id_secret: "{{ vault_id_secret }}"
     job_config: "{{ galaxy_job_config }}" # Use the variable we defined above
@@ -79,8 +80,8 @@ galaxy_config:
     #  - type: tool_shed_packages  
     container_resolvers_config_file: "{{ galaxy_config_dir }}/container_resolvers_conf.yml"
     # Data Library Directories
-    library_import_dir: /share/data/libraries/admin
-    user_library_import_dir: /share/data/libraries/user
+    library_import_dir: "{{ galaxy_data_dir }}/libraries/admin"
+    user_library_import_dir: "{{ galaxy_data_dir }}/libraries/user"
     # Celery
     enable_celery_tasks: true
     celery_conf:
@@ -93,7 +94,7 @@ galaxy_config:
     statsd_host: localhost
     statsd_influxdb: true
     # FTP
-    ftp_upload_dir: /share/data/uploads
+    ftp_upload_dir: "{{ galaxy_data_dir }}/uploads"
     ftp_upload_site: "{{ inventory_hostname }}"
   gravity:
     process_manager: systemd
@@ -153,31 +154,13 @@ galaxy_config_templates:
     dest: "/etc/httpd/conf.d/galaxy.conf"
   - src: templates/galaxy/config/reports.yml
     dest: "{{ galaxy_config.gravity.reports.config_file }}"  
-#  - src: templates/galaxy/config/dependency_resolvers_conf.xml
-#    dest: "{{ galaxy_config.galaxy.dependency_resolvers_config_file }}"
 
 galaxy_extra_dirs:
-  - /share/data
+  - {{ galaxy_data_dir }}
 
 # TUS
 galaxy_tusd_port: 1080
-galaxy_tus_upload_store: /share/data/tus
-
-# Telegraf
-telegraf_plugins_extra:
-  listen_galaxy_routes:
-    plugin: "statsd"
-    config:
-      - service_address = ":8125"
-      - metric_separator = "."
-      - allowed_pending_messages = 10000
-  monitor_galaxy_queue:
-    plugin: "exec"
-    config:
-      - commands = ["/usr/bin/env PGDATABASE=galaxy /usr/local/bin/gxadmin iquery queue-overview --short-tool-id"]
-      - timeout = "10s"
-      - data_format = "influx"
-      - interval = "15s"
+galaxy_tus_upload_store: "{{ galaxy_data_dir }}/galaxy/tus"
 
 # Proftpd:
 proftpd_galaxy_auth: yes
