@@ -49,6 +49,7 @@
 	XSendFile on
 	XSendFilePath ${galaxy_root} 
     </Location> 
+
     # enable caching on static content
     <Location "/galaxy/static">
         ExpiresActive On
@@ -64,15 +65,7 @@
         ProxyPassReverse http://127.0.0.1:{{ galaxy_tusd_port }}/files
     </Location>
     <Location "/reports">
-        RequestHeader set X-Forwarded-Proto "https"
-        ProxyPreserveHost on
-        RewriteCond %{HTTP:Connection} Upgrade [NC]
-        RewriteCond %{HTTP:Upgrade} websocket [NC]
-        ProxyPass {{ galaxy_config.gravity.reports.bind }}|http://localhost/reports
-        ProxyPassReverse {{ galaxy_config.gravity.reports.bind }}|http://localhost/reports
-    </Location>
-    <Location /flower>
-        ProxyPass http://localhost:5555
+        ProxyPass {{ galaxy_config.gravity.reports.bind }}|http://localhost/
     </Location>
     # serve visualization plugin static content
     <Directory "${galaxy_root}/config/plugins/(.+)/(.+)/static">
