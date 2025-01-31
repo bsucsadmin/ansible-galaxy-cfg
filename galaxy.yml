@@ -31,7 +31,7 @@
       when: ansible_os_family == 'Debian'
     - git:
         repo: 'https://github.com/usegalaxy-eu/libraries-training-repo'
-        dest: /share/data/libraries/
+        dest: "{{ galaxy_data_dir }}/libraries/"
   roles:
     - galaxyproject.tusd
     - usegalaxy_eu.apptainer
@@ -39,6 +39,7 @@
     - role: galaxyproject.miniconda
       become: true
       become_user: "{{ galaxy_user_name }}"
+    - geerlingguy.redis
     - galaxyproject.proftpd
     - galaxyproject.gxadmin
     - galaxyproject.cvmfs

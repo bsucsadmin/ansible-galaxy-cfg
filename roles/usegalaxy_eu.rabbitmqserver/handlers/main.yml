@@ -1,3 +1,0 @@
----
-- name: podman restart
-  command: podman restart {{ rabbitmq_container.name }}
