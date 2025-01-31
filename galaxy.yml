@@ -20,7 +20,7 @@
   pre_tasks:
     - name: Install Dependencies
       package:
-        name: ['acl', 'bzip2', 'git', 'make', 'tar', 'python3-setuptools','python3-requests']
+        name: ['acl', 'bzip2', 'git', 'make', 'tar', 'python3-setuptools', 'python3-requests']
     - name: Install RHEL/CentOS/Rocky specific dependencies
       package:
         name: ['tmpwatch']
@@ -36,6 +36,7 @@
     - galaxyproject.tusd
     - usegalaxy_eu.apptainer
     - galaxyproject.galaxy
+    - usegalaxy_eu.tpv_auto_lint
     - role: galaxyproject.miniconda
       become: true
       become_user: "{{ galaxy_user_name }}"

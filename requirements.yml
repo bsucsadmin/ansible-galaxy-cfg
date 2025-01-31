@@ -25,3 +25,6 @@
 # Our FTP Server
 - src: galaxyproject.proftpd
   version: 0.3.1
+# TPV Linting
+- name: usegalaxy_eu.tpv_auto_lint
+  version: 0.4.3
