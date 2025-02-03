@@ -87,14 +87,10 @@ galaxy_config:
     library_import_dir: "{{ galaxy_data_dir }}/libraries/admin"
     user_library_import_dir: "{{ galaxy_data_dir }}/libraries/user"
     # Celery
-    amqp_internal_connection: "sqlalchemy+postgresql:///galaxy?host=/var/run/postgresql"
-    enable_celery_tasks: true
+    amqp_internal_connection: "pyamqp://galaxy:{{ vault_rabbitmq_password_galaxy }}@localhost:5671/galaxy_internal?ssl=1"
     celery_conf:
-      broker_url: null
-      result_backend: "db+postgresql:///galaxy?host=/var/run/postgresql"
-      task_routes:
-        galaxy.fetch_data: galaxy.external
-        galaxy.set_job_metadata: galaxy.external
+      result_backend: "redis://localhost:6379/0"
+    enable_celery_tasks: true
     # Monitoring
     statsd_host: localhost
     statsd_influxdb: true
@@ -203,8 +199,8 @@ proftpd_options:
   - Port: 21
 proftpd_sql_db: galaxy@/var/run/postgresql
 proftpd_sql_user: galaxy
-proftpd_conf_ssl_certificate: /etc/letsencrypt/live/csci-galaxtose.dhcp.bsu.edu-0001/fullchain.pem
-proftpd_conf_ssl_certificate_key: /etc/letsencrypt/live/csci-galaxtose.dhcp.bsu.edu-0001/privkey.pem
+proftpd_conf_ssl_certificate: /etc/letsencrypt/live/{{ inventory_hostname }}/fullchain.pem
+proftpd_conf_ssl_certificate_key: /etc/letsencrypt/live/{{ inventory_hostname }}/privkey.pem
 proftpd_global_options:
   - PassivePorts: 56000 60000
 proftpd_use_mod_tls_shmcache: false
@@ -219,7 +215,7 @@ certbot_auto_renew_minute: "{{ 59 |random(seed=inventory_hostname)  }}"
 certbot_auth_method: --authenticator edgedns --edgedns-credentials /etc/letsencrypt/bsu.ini
 certbot_install_method: virtualenv
 certbot_auto_renew: yes
-certbot_create_extra_args: --authenticator edgedns --edgedns-credentials /etc/letsencrypt/bsu.ini
+#certbot_create_extra_args: --authenticator edgedns --edgedns-credentials /etc/letsencrypt/bsu.ini
 certbot_auto_renew_user: root
 certbot_environment: production 
 certbot_well_known_root: /var/www/html
@@ -271,6 +267,6 @@ rabbitmq_users:
     password: "{{ vault_rabbitmq_admin_password }}"
     tags: administrator
     vhost: /
-  - user: pulsar_au
-    password: "{{ vault_rabbitmq_password_vhost }}"
-    vhost: /pulsar/pulsar_au
+  - user: galaxy
+    password: "{{ vault_rabbitmq_password_galaxy }}"
+    vhost: galaxy_internal
