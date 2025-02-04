@@ -8,6 +8,7 @@ galaxy_layout: root-dir
 galaxy_root: /opt/ohpc/pub/srv/galaxy
 galaxy_data_dir: /share/data/galaxy
 galaxy_user: { name: "{{ galaxy_user_name }}", shell: /bin/bash }
+galaxy_user_upload_dir: /share/data/galaxy-upload
 galaxy_commit_id: v24.1.3
 galaxy_force_checkout: true
 miniconda_prefix: "{{ galaxy_tool_dependency_dir }}/_conda"
@@ -59,9 +60,10 @@ galaxy_job_config:
 
 galaxy_config:
   galaxy:
+    upstream_gzip: true
     apache_xsendfile: true
     galaxy_url_prefix: /galaxy
-    brand: Ball State Galaxy 🚀
+    brand: Ball State Galaxy 🧬🔬🚀🐦
     logo_src: "https://cdn.freebiesupply.com/logos/thumbs/2x/ball-state-university-logo.png"
     themes_config_file: "{{ galaxy_config_dir }}/themes.yml"
     # Main Configuration
@@ -85,7 +87,8 @@ galaxy_config:
     tool_data_table_config_path: /cvmfs/data.galaxyproject.org/byhand/location/tool_data_table_conf.xml,/cvmfs/data.galaxyproject.org/managed/location/tool_data_table_conf.xml
     # Data Library Directories
     library_import_dir: "{{ galaxy_data_dir }}/libraries/admin"
-    user_library_import_dir: "{{ galaxy_data_dir }}/libraries/user"
+    user_library_import_dir: "{{ galaxy_user_upload_dir }}"
+    user_library_import_dir_auto_creation: true
     # Celery
     amqp_internal_connection: "pyamqp://galaxy:{{ vault_rabbitmq_password_galaxy }}@localhost:5671/galaxy_internal?ssl=1"
     celery_conf:
@@ -94,9 +97,6 @@ galaxy_config:
     # Monitoring
     statsd_host: localhost
     statsd_influxdb: true
-    # FTP
-    ftp_upload_dir: "{{ galaxy_data_dir }}/uploads"
-    ftp_upload_site: "{{ inventory_hostname }}"
     # Job config placement
     job_config: "{{ galaxy_job_config }}"
     # Tool Dependencies
@@ -148,7 +148,7 @@ galaxy_job_config_file: "{{ galaxy_config_dir }}/galaxy.yml"
 
 galaxy_config_files_public:
   - src: files/galaxy/welcome.html
-    dest: "{{ galaxy_mutable_config_dir }}/welcome.html"
+    dest: "{{ galaxy_server_dir }}/static/welcome.html"
 
 galaxy_config_files:
   - src: files/galaxy/themes.yml
@@ -171,6 +171,7 @@ galaxy_config_templates:
 galaxy_extra_dirs:
   - "{{ galaxy_data_dir }}"
   - "{{ galaxy_config_dir }}/{{ tpv_config_dir_name }}"
+  - "{{ galaxy_user_upload_dir }}"
 
 galaxy_extra_privsep_dirs:
   - "{{ tpv_mutable_dir }}"
@@ -179,32 +180,6 @@ tpv_privsep: true
 # TUS
 galaxy_tusd_port: 1080
 galaxy_tus_upload_store: "{{ galaxy_data_dir }}/tus"
-
-# Proftpd:
-proftpd_galaxy_auth: yes
-galaxy_ftp_upload_dir: "{{ galaxy_config.galaxy.ftp_upload_dir }}"
-proftpd_display_connect: |
-  {{ inventory_hostname }} FTP server
-proftpd_galaxy_modules:
-  - mod_sql.c
-  - mod_sql_passwd.c
-  - mod_sql_postgres.c
-proftpd_galaxy_default_options:
-  - AuthOrder: mod_sql.c, mod_sql_postgress.c, mod_sql_passwd.c
-#  Unauthorized access is prohibited
-proftpd_create_ftp_upload_dir: yes
-proftpd_options:
-  - User: galaxy
-  - Group: galaxy
-  - Port: 21
-proftpd_sql_db: galaxy@/var/run/postgresql
-proftpd_sql_user: galaxy
-proftpd_conf_ssl_certificate: /etc/letsencrypt/live/{{ inventory_hostname }}/fullchain.pem
-proftpd_conf_ssl_certificate_key: /etc/letsencrypt/live/{{ inventory_hostname }}/privkey.pem
-proftpd_global_options:
-  - PassivePorts: 56000 60000
-proftpd_use_mod_tls_shmcache: false
-proftpd_tls_options: NoSessionReuseRequired
 
 # Certbot
 certbot_testmode: false

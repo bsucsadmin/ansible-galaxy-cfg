@@ -44,7 +44,6 @@
     - geerlingguy.docker
     - usegalaxy_eu.rabbitmqserver
     - geerlingguy.redis
-    - galaxyproject.proftpd
     - galaxyproject.gxadmin
     - galaxyproject.cvmfs
   post_tasks:
