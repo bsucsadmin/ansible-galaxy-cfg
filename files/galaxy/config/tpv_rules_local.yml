@@ -36,12 +36,12 @@ destinations:
       APPTAINER_CACHEDIR: /tmp/singularity
       # Singularity uses a temporary directory to build the squashfs filesystem
       APPTAINER_TMPDIR: /tmp
-  #slurm:
-  #  inherits: singularity
-  #  runner: slurm
-  #  max_accepted_cores: 60
-  #  max_accepted_mem: 300
-  #  max_cores: 1:
-  #  max_mem: 8
-  #  params:
-  #    native_specification: --nodes=1 --ntasks=1 --cpus-per-task={cores}
+  slurm:
+    inherits: singularity
+    runner: slurm
+    max_accepted_cores: 60
+    max_accepted_mem: 300
+    max_cores: 16
+    max_mem: 8
+    params:
+      native_specification: --nodes=1 --ntasks=1 --cpus-per-task={cores}

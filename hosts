@@ -1,8 +1,8 @@
 [galaxyservers]
-csci-galaxtose.dhcp.bsu.edu ansible_connection=local ansible_user=csadmin
+ccncluster.bsu.edu ansible_connection=local ansible_user=root
 [dbservers:children]
 galaxyservers
 
 [monitoring]
-csci-galaxtose.dhcp.bsu.edu ansible_connection=local ansible_user=csadmin
+ccncluster.bsu.edu ansible_connection=local ansible_user=root
 

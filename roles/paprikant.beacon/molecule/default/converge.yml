@@ -1,7 +1,0 @@
----
-- name: Converge
-  hosts: all
-  tasks:
-    - name: "Include paprikant.beacon"
-      ansible.builtin.include_role:
-        name: "paprikant.beacon"

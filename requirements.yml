@@ -12,7 +12,7 @@
   version: 0.1.11
 # gxadmin (used in cleanup, and later monitoring.)
 - src: galaxyproject.gxadmin
-  version: 0.0.12  
+  version: 0.0.13  
 # TUS (uploads)
 - name: galaxyproject.tusd
   version: 0.0.1
@@ -32,3 +32,6 @@
   version: 1.4.4
 - src: galaxyproject.pulsar
   version: 1.0.10
+# Celery, Redis, and Flower (dashboard)
+- name: geerlingguy.redis
+  version: 1.8.0

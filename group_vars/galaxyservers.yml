@@ -33,19 +33,6 @@ galaxy_job_config:
       local_env:
         runner: local_runner
         tmp_dir: true
-      # singularity:
-      #   runner: local_runner
-      #   singularity_enabled: true
-      #   env:
-      #     # Ensuring a consistent collation environment is good for reproducibility.
-      #     - name: LC_ALL
-      #       value: C
-      #     # The cache directory holds the docker containers that get converted
-      #     - name: APPTAINER_CACHEDIR
-      #       value: /tmp/singularity
-      #     # Apptainer uses a temporary directory to build the squashfs filesystem
-      #     - name: APPTAINER_TMPDIR
-      #       value: /tmp 
       tpv_dispatcher:
         runner: dynamic
         type: python
@@ -72,7 +59,7 @@ galaxy_config:
       - psdavis@bsu.edu
       - haren.eshwaran@bsu.edu
     cleanup_job: onsuccess
-    database_connection: "postgresql:///{{ galaxy_db_name }}?host=/var/run/postgresql"
+    database_connection: "postgresql://{{ galaxy_user_name }}:{{ galaxy_postgress_password }}/{{ galaxy_db_name }}?host=/var/run/postgresql"
     file_path: "{{ galaxy_data_dir }}/datasets"
     job_working_directory: "{{ galaxy_data_dir }}/jobs"
     object_store_store_by: uuid

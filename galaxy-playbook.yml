@@ -1,0 +1,57 @@
+---
+- hosts: dbservers
+  become: true
+  become_user: root
+  pre_tasks:
+    - name: Install Dependencies
+      package:
+        name: 'acl'
+  # roles:
+  #   - galaxyproject.postgresql
+  #   - role: galaxyproject.postgresql_objects
+  #     become: true
+  #     become_user: postgres
+
+- hosts: galaxyservers
+  become: true
+  become_user: root
+  vars_files:
+    - group_vars/secret.yml
+  pre_tasks:
+    - name: Install Dependencies
+      package:
+        name: ['acl', 'bzip2', 'git', 'make', 'tar', 'python3-setuptools', 'python3-requests']
+    - name: Install RHEL/CentOS/Rocky specific dependencies
+      package:
+        name: ['tmpwatch']
+      when: ansible_os_family == 'RedHat'
+    - name: Install Debian/Ubuntu specific dependencies
+      package:
+        name: ['tmpreaper']
+      when: ansible_os_family == 'Debian'
+    - git:
+        repo: 'https://github.com/usegalaxy-eu/libraries-training-repo'
+        dest: "{{ galaxy_data_dir }}/libraries/"
+  roles:
+    - galaxyproject.tusd
+    - usegalaxy_eu.apptainer
+    - galaxyproject.galaxy
+    - usegalaxy_eu.tpv_auto_lint
+    - role: galaxyproject.miniconda
+      become: true
+      become_user: "{{ galaxy_user_name }}"
+    - usegalaxy_eu.certbot
+    - geerlingguy.docker
+    - usegalaxy_eu.rabbitmqserver
+    - geerlingguy.redis
+    - galaxyproject.gxadmin
+    - galaxyproject.cvmfs
+  post_tasks:
+    - name: Setup gxadmin cleanup task
+      ansible.builtin.cron:
+        name: "Cleanup Old User Data"
+        user: "{{ galaxy_user_name }}"# Run as the Galaxy user
+        minute: "0"
+        hour: "0"
+        job: "SHELL=/bin/bash source {{ galaxy_venv_dir }}/bin/activate &&  GALAXY_LOG_DIR=/tmp/gxadmin/ GALAXY_ROOT={{ galaxy_root }}/server GALAXY_CONFIG_FILE={{ galaxy_config_file }} /usr/local/bin/gxadmin galaxy cleanup 60"
+  
