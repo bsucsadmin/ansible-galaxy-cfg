@@ -24,6 +24,9 @@ galaxy_job_config:
     local_runner:
       load: galaxy.jobs.runners.local:LocalJobRunner
       workers: 4
+    slurm:
+      load: galaxy.jobs.runners.slurm:SlurmJobRunner
+      drmaa_library_path: /usr/lib64/libdrmaa.so
   handling:
     assign: ["db-skip-locked"]
   execution:
@@ -136,6 +139,9 @@ galaxy_job_config_file: "{{ galaxy_config_dir }}/galaxy.yml"
 galaxy_config_files_public:
   - src: files/galaxy/welcome.html
     dest: "{{ galaxy_server_dir }}/static/welcome.html"
+  - src: files/galaxy/tool_data/sift_db.loc
+    dest: "{{ galaxy_root }}/var/tool_data/sift_db.loc"
+    force: no
 
 galaxy_config_files:
   - src: files/galaxy/themes.yml
@@ -177,7 +183,6 @@ certbot_auto_renew_minute: "{{ 59 |random(seed=inventory_hostname)  }}"
 certbot_auth_method: --authenticator edgedns --edgedns-credentials /etc/letsencrypt/bsu.ini
 certbot_install_method: virtualenv
 certbot_auto_renew: yes
-#certbot_create_extra_args: --authenticator edgedns --edgedns-credentials /etc/letsencrypt/bsu.ini
 certbot_auto_renew_user: root
 certbot_environment: production 
 certbot_well_known_root: /var/www/html
