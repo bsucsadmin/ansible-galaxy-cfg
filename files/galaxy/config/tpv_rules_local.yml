@@ -29,6 +29,7 @@ destinations:
     max_accepted_cores: 1
     params:
       singularity_enabled: true
+      singularity_run_extra_arguments: '--no-mount /etc/localtime'
     env:
       # Ensuring a consistent collation environment is good for reproducibility.
       LC_ALL: C
