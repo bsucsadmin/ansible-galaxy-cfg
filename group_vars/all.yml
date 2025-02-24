@@ -7,6 +7,8 @@ galaxy_user_name: galaxyuser
 galaxy_db_name: galaxydb
 
 # CVMFS vars
-cvmfs_role: client
+cvmfs_role: 
+  - client
+  - localproxy
 galaxy_cvmfs_repos_enabled: config-repo
 cvmfs_quota_limit: 500
