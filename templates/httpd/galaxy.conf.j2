@@ -48,6 +48,7 @@
     <Location "/galaxy">
 	XSendFile on
 	XSendFilePath ${galaxy_root} 
+    XSendFilePath {{ galaxy_data_dir }}
     </Location> 
 
     # enable caching on static content
