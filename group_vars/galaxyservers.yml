@@ -148,6 +148,8 @@ galaxy_config_files:
     dest: "{{ galaxy_config.galaxy.themes_config_file }}"
   - src: files/galaxy/config/tpv_rules_local.yml
     dest: "{{ tpv_mutable_dir }}/tpv_rules_local.yml"
+  - src: files/galaxy/config/sanitize_allowlist.txt
+    dest: "{{ galaxy_mutable_config_dir }}/sanitize_allowlist.txt"
 
 galaxy_config_templates:
   - src: templates/galaxy/config/dependency_resolvers_conf.yml.j2
