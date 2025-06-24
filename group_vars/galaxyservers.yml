@@ -12,7 +12,7 @@ galaxy_user_upload_dir: /share/data/galaxy-upload
 galaxy_commit_id: v24.2.1
 galaxy_force_checkout: true
 miniconda_prefix: "{{ galaxy_tool_dependency_dir }}/_conda"
-miniconda_version: 24.11.1
+miniconda_version: 25.1.1
 miniconda_channels: ["conda-forge", "bioconda", "defaults"]
 galaxy_additional_venv_packages:
   - ldap3
@@ -117,7 +117,7 @@ galaxy_config:
       queues: celery,galaxy.internal
       pool: threads
       memory_limit: 2
-      loglevel: DEBUG
+      loglevel: INFO
     tusd:
       enable: true
       tusd_path: /usr/local/sbin/tusd

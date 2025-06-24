@@ -30,8 +30,16 @@ destinations:
     inherits: singularity
     runner: slurm
     max_accepted_cores: 60
-    max_accepted_mem: 300
+    max_accepted_mem: 150
     max_cores: 128
-    max_mem: 150
+    max_mem: 300
     params:
       native_specification: --nodes=1 --ntasks=1 --cpus-per-task={cores}
+  slurm-gpu:
+    inherits: singularity
+    runner: slurm
+    max_accepted_cores: 10
+    max_accepted_mem: 150
+    max_accepted_gpus: 1
+    params:
+      native_specification:: -p gpu -G 1 --cpus-per-task={cores}
