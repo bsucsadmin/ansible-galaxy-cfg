@@ -9,7 +9,7 @@ galaxy_root: /opt/ohpc/pub/srv/galaxy
 galaxy_data_dir: /share/data/galaxy
 galaxy_user: { name: "{{ galaxy_user_name }}", shell: /bin/bash }
 galaxy_user_upload_dir: /share/data/galaxy-upload
-galaxy_commit_id: v24.2.1
+galaxy_commit_id: v25.0.2
 galaxy_force_checkout: true
 miniconda_prefix: "{{ galaxy_tool_dependency_dir }}/_conda"
 miniconda_version: 25.1.1
@@ -67,6 +67,8 @@ galaxy_config:
     job_working_directory: "{{ galaxy_data_dir }}/jobs"
     object_store_store_by: uuid
     id_secret: "{{ vault_id_secret }}"
+    # Sanitize Tool Output
+    sanitize_allowlist_file: sanitize_allowlist.txt
     # Tool security
     outputs_to_working_directory: true
     new_user_dataset_access_role_default_private: true # Make datasets private by default
@@ -149,7 +151,7 @@ galaxy_config_files:
   - src: files/galaxy/config/tpv_rules_local.yml
     dest: "{{ tpv_mutable_dir }}/tpv_rules_local.yml"
   - src: files/galaxy/config/sanitize_allowlist.txt
-    dest: "{{ galaxy_mutable_config_dir }}/sanitize_allowlist.txt"
+    dest: "{{ galaxy_config_dir }}/sanitize_allowlist.txt"
 
 galaxy_config_templates:
   - src: templates/galaxy/config/dependency_resolvers_conf.yml.j2
