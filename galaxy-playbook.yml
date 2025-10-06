@@ -47,11 +47,17 @@
     - galaxyproject.gxadmin
     - galaxyproject.cvmfs
   post_tasks:
+    - name: "set permissions and owner of sanitize_allowlist.txt"
+      ansible.builtin.file:
+        path: "{{ galaxy_config_dir }}/sanitize_allowlist.txt"
+        owner: "{{ galaxy_user_name }}"
+        state: file
+        owner: "{{ galaxy_user_name }}"
+        group: apache
     - name: Setup gxadmin cleanup task
       ansible.builtin.cron:
         name: "Cleanup Old User Data"
-        user: "{{ galaxy_user_name }}"# Run as the Galaxy user
+        user: "{{ galaxy_user_name }}" # Run as the Galaxy user
         minute: "0"
         hour: "0"
         job: "SHELL=/bin/bash source {{ galaxy_venv_dir }}/bin/activate &&  GALAXY_LOG_DIR=/tmp/gxadmin/ GALAXY_ROOT={{ galaxy_root }}/server GALAXY_CONFIG_FILE={{ galaxy_config_file }} /usr/local/bin/gxadmin galaxy cleanup 60"
-  
