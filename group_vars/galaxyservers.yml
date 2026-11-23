@@ -71,7 +71,7 @@ galaxy_config:
     # Sanitize Tool Output
     sanitize_allowlist_file: sanitize_allowlist.txt
     # Allow some users to add tools
-    enable_user_defined_tools: true
+    enable_beta_tool_formats: true
     # Tool security
     outputs_to_working_directory: true
     new_user_dataset_access_role_default_private: true # Make datasets private by default
